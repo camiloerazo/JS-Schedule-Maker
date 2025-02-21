@@ -127,6 +127,15 @@ const drawInterface = (workers) => {
 	};
 	ctx.closePath();
 };
+const drawInGrid = (x, y, worker) => {
+	console.log("in drawInGrid x = ", x, " y = ", y);
+	if (x > 0 || y > 0){
+		let mx = (x * dayLineLength) + hourLine + initialGridx;
+		let my = (y * divisionHeight) + initialGridy;
+		console.log("in draw grid x = ", mx, " y = ", my);
+		drawHelpSquare(mx, my);
+	};
+};
 //Funct to export as image
 const exportImg = () => {
 	const link = document.createElement("a");
@@ -138,8 +147,8 @@ const exportImg = () => {
 const getMatrixPos = (x, y) => {
 	x = (x - (initialGridx + hourLine)) / dayLineLength;
 	y = (y - initialGridy) / divisionHeight;
-	console.log("x in matrix ", x);
-	console.log("y in matrix ", y)
+	console.log("x in matrix ", Math.floor(x));
+	console.log("y in matrix ", Math.floor(y));
 	return {x: Math.floor(x), y: Math.floor(y)};
 };
 //Mouse events
@@ -161,13 +170,7 @@ canvas.addEventListener("mousemove", (event) => {
 	if (isPressed == true){
 		const pos = getMousePos(event);
 		const mpos = getMatrixPos(pos.x, pos.y);
-		if (posMatrix[mpos.x][mpos.y] == null){
-			posMatrix[mpos.x][mpos.y] == "red";
-			let x = (mpos.x * dayLineLength)+ initialGridx + hourLine;
-			let y = (mpos.y * divisionHeight) + initialGridy;
-			//Need to check if x and y are inside the grid
-			drawHelpSquare(x, y);
-		};
+		drawInGrid(mpos.x, mpos.y);
 	};
 	//console.log("im moving ",getMousePos(event));
 });
