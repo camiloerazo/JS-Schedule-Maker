@@ -1,14 +1,11 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 ctx.fillStyle = "white"; // Set fill color to white
-ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill entire canvas
 //Set canvas resolution for HD displays
 const ratio = window.devicePixelRatio || 1;
-canvas.width = 1500 * ratio;  // Set actual width for HD
-canvas.height = 1000 * ratio; // Set actual height for HD
-canvas.style.width = "1500px"; // Display width
-canvas.style.height = "1000px"; // Display height
-ctx.scale(ratio, ratio);  // Scale context for better resolution
+canvas.width = 2500;//window.innerWidth * ratio;  // Set actual width for HD
+canvas.height = 2000; //window.innerHeight * ratio; // Set actual height for HD
+//ctx.scale(ratio, ratio);  // Scale context for better resolution
 ctx.font = "25px Arial";
 //Data
 const begin = 7;
