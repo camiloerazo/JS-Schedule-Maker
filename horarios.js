@@ -15,6 +15,7 @@ const begin = 7;
 const end = 19;
 const initialGridx = 50;
 const initialGridy = 150;
+const initialInterfacey = 20;
 const divisionHeight = 30;
 const dayLineLength = 170;
 const hourLine = 70;
@@ -22,10 +23,16 @@ let isPressed = false;
 const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Domingo"];
 const data = {
 	"julian":{
-		"horarios":[]
+		"horarios":[],
+		"color": null
 	},
 	"daniela":{
-		"horarios":[]
+		"horarios":[],
+		"color": null
+	},
+	"pamela":{
+		"horarios": [],
+		"color": null
 	}
 };
 const posMatrix = [];
@@ -50,7 +57,8 @@ const addRow = (matrix, days) => {
 	matrix.push(row);
 	//console.log(matrix);
 };
-const drawHelpSquare = (x, y) => {
+//Drawing functions
+const drawHelpSquare = (x, y, h, w) => {
 	ctx.fillStyle = "red";
 	ctx.fillRect(x, y, 30, 30);
 	ctx.fillStyle = "black";
@@ -94,7 +102,33 @@ const drawGrid = (totalWorkers) => {
 		ctx.lineTo(posx, (howManyHours * divisionHeight) + initialGridy);
 		posx += dayLineLength;
 	};
+	ctx.closePath();
 	ctx.stroke();
+};
+const drawInterface = (workers) => {
+	let x = initialGridx + hourLine;
+	let y = initialInterfacey;
+	ctx.beginPath();
+	ctx.moveTo(initialGridx + hourLine, initialInterfacey);
+	drawHelpSquare(initialGridx + hourLine, initialInterfacey);
+	//Iterating over workers
+	for (let worker in data){
+		console.log(worker);
+		if (data[worker]["color"] != null) {
+			let color  = data[worker];
+		}else {
+			const r = Math.floor((Math.random() * 255));
+			const g = Math.floor((Math.random() * 255));
+			const b = Math.floor((Math.random() * 255));
+			let color = `rgb(${r} ${g} ${b})`;
+			console.log(color);
+			ctx.fillStyle = color;
+			ctx.fillRect(x,y,30,30);
+			ctx.fillText(worker, x + 40, y + 10);
+			x += dayLineLength;
+		};
+	};
+	ctx.closePath();
 };
 //Funct to export as image
 const exportImg = () => {
@@ -134,6 +168,7 @@ canvas.addEventListener("mousemove", (event) => {
 			posMatrix[mpos.x][mpos.y] == "red";
 			let x = (mpos.x * dayLineLength)+ initialGridx + hourLine;
 			let y = (mpos.y * divisionHeight) + initialGridy;
+			//Need to check if x and y are inside the grid
 			drawHelpSquare(x, y);
 		};
 	};
@@ -144,5 +179,6 @@ canvas.addEventListener("click", (event) => {
 	getMatrixPos(mpos.x, mpos.y);
 });
 drawGrid(totalWorkers);
+drawInterface();
 //drawHelpSquare(initialGridx + 70 + dayLineLength * 7, 50);
 //exportImg();
