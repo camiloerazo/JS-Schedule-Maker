@@ -1,11 +1,12 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 ctx.fillStyle = "white"; // Set fill color to white
-//Set canvas resolution for HD displays
 const ratio = window.devicePixelRatio || 1;
-canvas.width = 2500;//window.innerWidth * ratio;  // Set actual width for HD
-canvas.height = 2000; //window.innerHeight * ratio; // Set actual height for HD
-//ctx.scale(ratio, ratio);  // Scale context for better resolution
+//canvas.style.width = "1250px";
+//canvas.style.height = "1000px";
+canvas.width = 2500 * ratio;
+canvas.height = 2000 * ratio;
+//ctx.scale(ratio, ratio);
 ctx.font = "25px Arial";
 //Data
 const begin = 7;
@@ -129,10 +130,10 @@ const drawInterface = (workers) => {
 };
 const drawInGrid = (x, y, worker) => {
 	console.log("in drawInGrid x = ", x, " y = ", y);
-	if (x > 0 || y > 0){
+	if (x >= -0.1 && y >= 0){
 		let mx = (x * dayLineLength) + hourLine + initialGridx;
 		let my = (y * divisionHeight) + initialGridy;
-		console.log("in draw grid x = ", mx, " y = ", my);
+		console.log("inside the if of drawInGrid x = ", mx, " y = ", my);
 		drawHelpSquare(mx, my);
 	};
 };
@@ -162,6 +163,7 @@ const getMousePos = (event) => {
 canvas.addEventListener("mousedown", (event) => {
 	isPressed = true;
 	const pos = getMousePos(event);
+	console.log("this is the pos of the click ", pos);
 });
 canvas.addEventListener("mouseup", (event) => {
 	isPressed = false;
