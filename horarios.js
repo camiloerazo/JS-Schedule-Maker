@@ -15,43 +15,51 @@ const initialGridx = 50;
 const initialGridy = 150;
 const initialInterfacey = 20;
 const divisionHeight = 30;
-const dayLineLength = 170;
 const hourLine = 70;
+const shiftLenght  = 30;
 let isPressed = false;
 const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Domingo"];
 let selectedWorker;
 const data = {
 	"julian":{
 		"horarios":[],
-		"color": null
+		"color": null,
+		"posInDay": 1
 	},
 	"daniela":{
 		"horarios":[],
-		"color": null
+		"color": null,
+		"posInDay": 2
 	},
 	"pamela":{
 		"horarios": [],
-		"color": null
+		"color": null,
+		"posInDay": 3
 	},
 	"valentina":{
 		"horarios": [],
-		"color": null
+		"color": null,
+		"posInDay": 4
 	},
 	"camilo":{
 		"horarios": [],
-		"color": null
+		"color": null,
+		"posInDay": 5
 	},
 	"sara":{
 		"horarios": [],
-		"color": null
+		"color": null,
+		"posInDay": 6
 	},
 	"laura":{
 		"horarios": [],
-		"color": null
+		"color": null,
+		"posInDay": 7
 	}		
 };
 const posMatrix = [];
 const totalWorkers = Object.keys(data).length;
+const dayLineLength = totalWorkers * shiftLenght;
 //Functions
 const transformTime = (hour) => {
 	if (hour > 12.5){
@@ -152,8 +160,14 @@ const drawInGrid = (x, y, worker) => {
 		let my = (y * divisionHeight) + initialGridy;
 		console.log("inside the if of drawInGrid x = ", mx, " y = ", my);
 		const color = data[worker].color;
+		const pos = data[worker]["posInDay"];
 		console.log("this should be the color we about to draw = ", color);
-		drawHelpSquare(mx, my, color);
+		for (let i = 1; i <= totalWorkers; i++){
+			if (i == pos) drawHelpSquare(mx, my, color);
+			else{
+				mx += shiftLenght;
+			};
+		};
 	};
 };
 //Funct to export as image
