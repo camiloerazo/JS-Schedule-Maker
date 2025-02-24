@@ -17,7 +17,10 @@ const initialInterfacey = 20;
 const divisionHeight = 30;
 const hourLine = 70;
 const shiftLenght  = 30;
+const initialInfoX = initialGridx + 30;
+const initialInfoY = initialGridy + (divisionHeight * ((end - begin + 1) * 2)) + 25;
 let isPressed = false;
+const backgroundColor = "black";
 const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Domingo"];
 let selectedWorker;
 const data = {
@@ -118,7 +121,7 @@ const drawGrid = (totalWorkers) => {
 	posy = initialGridy;
 	ctx.moveTo(initialGridx + hourLine, posy);
 	//Drawing the days and the separation line between them 
-	console.log(howManyHours);
+	//console.log("total hours per day ", howManyHours);
 	for (let i = 0; i < days.length; i++){
 		ctx.fillText(days[i], posx, posy);
 		ctx.moveTo(posx, posy);
@@ -144,7 +147,7 @@ const drawInterface = (workers) => {
 			const b = Math.floor((Math.random() * 255));
 			let color = `rgb(${r} ${g} ${b})`;
 			data[worker].color = color;
-			console.log(color);
+			//console.log(color);
 			ctx.fillStyle = color;
 			ctx.fillRect(x,y,30,30);
 			ctx.fillText(worker, x + 40, y + 10);
@@ -154,14 +157,15 @@ const drawInterface = (workers) => {
 	ctx.closePath();
 };
 const drawInGrid = (x, y, worker) => {
-	console.log("in drawInGrid x = ", x, " y = ", y);
+	//console.log("in drawInGrid x = ", x, " y = ", y);
 	if (x >= -0.1 && y >= 0){
 		let mx = (x * dayLineLength) + hourLine + initialGridx;
 		let my = (y * divisionHeight) + initialGridy;
-		console.log("inside the if of drawInGrid x = ", mx, " y = ", my);
+		//console.log("inside the if of drawInGrid x = ", mx, " y = ", my);
 		const color = data[worker].color;
 		const pos = data[worker]["posInDay"];
-		console.log("this should be the color we about to draw = ", color);
+		//console.log("this should be the color we about to draw = ", color);
+		//This for loop tell were to draw in the day based on the pos atributte in data
 		for (let i = 1; i <= totalWorkers; i++){
 			if (i == pos) drawHelpSquare(mx, my, color);
 			else{
@@ -169,6 +173,15 @@ const drawInGrid = (x, y, worker) => {
 			};
 		};
 	};
+};
+const drawStatistics = () => {
+	let x = initialGridx;
+	let y = initialInfoY;
+	for (worker in data){
+		ctx.fillStyle = data[worker].color;
+		ctx.fillText(worker, x, y);
+		x += 150;
+	}
 };
 //Funct to export as image
 const exportImg = () => {
@@ -181,13 +194,13 @@ const exportImg = () => {
 const getMatrixPos = (x, y) => {
 	x = (x - (initialGridx + hourLine)) / dayLineLength;
 	y = (y - initialGridy) / divisionHeight;
-	console.log("x in matrix ", Math.floor(x));
-	console.log("y in matrix ", Math.floor(y));
+	//console.log("x in matrix ", Math.floor(x));
+	//console.log("y in matrix ", Math.floor(y));
 	return {x: Math.floor(x), y: Math.floor(y)};
 };
 const checkIfInterfaceClicked = (x, y) => {
 	if (x > initialGridx + hourLine && y < 110){
-		console.log("interface being clicked");
+		//console.log("interface being clicked");
 		//This function returns the name of the worker who is being clicked
 		let dx = Math.floor((x - initialGridx - hourLine) / dayLineLength);
 		let i = 0;
@@ -212,10 +225,11 @@ const getMousePos = (event) => {
 canvas.addEventListener("mousedown", (event) => {
 	isPressed = true;
 	const pos = getMousePos(event);
-	console.log("this is the pos of the click ", pos);
+	//console.log("this is the pos of the click ", pos);
 	let name = checkIfInterfaceClicked(pos.x, pos.y);
 	if (name){
-		selectedWorker = name; 
+		selectedWorker = name;
+		drawStatistics();
 	};
 });
 canvas.addEventListener("mouseup", (event) => {
@@ -225,6 +239,7 @@ canvas.addEventListener("mousemove", (event) => {
 	if (isPressed == true){
 		const pos = getMousePos(event);
 		const mpos = getMatrixPos(pos.x, pos.y);
+		console.log("this is the matrix pos ", mpos);
 		drawInGrid(mpos.x, mpos.y, selectedWorker);
 	};
 	//console.log("im moving ",getMousePos(event));
