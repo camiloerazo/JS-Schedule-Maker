@@ -25,37 +25,93 @@ const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Do
 let selectedWorker;
 const data = {
 	"julian":{
-		"horarios":[],
+		"horarios":[
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+		],
 		"color": null,
 		"posInDay": 1
 	},
 	"daniela":{
-		"horarios":[],
+		"horarios":[
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
 		"color": null,
 		"posInDay": 2
 	},
 	"pamela":{
-		"horarios": [],
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
 		"color": null,
 		"posInDay": 3
 	},
 	"valentina":{
-		"horarios": [],
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
 		"color": null,
 		"posInDay": 4
 	},
 	"camilo":{
-		"horarios": [],
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
 		"color": null,
 		"posInDay": 5
 	},
 	"sara":{
-		"horarios": [],
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
 		"color": null,
 		"posInDay": 6
 	},
 	"laura":{
-		"horarios": [],
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
 		"color": null,
 		"posInDay": 7
 	}		
@@ -63,6 +119,7 @@ const data = {
 const posMatrix = [];
 const totalWorkers = Object.keys(data).length;
 const dayLineLength = totalWorkers * shiftLenght;
+let hoursPerDay;
 //Functions
 const transformTime = (hour) => {
 	if (hour > 12.5){
@@ -112,6 +169,8 @@ const drawGrid = (totalWorkers) => {
 		addRow(posMatrix, days.length); //Adds a row to the posMatrix with the number of workers
 		howManyHours++;
 	};
+	hoursPerDay = howManyHours;
+	console.log("total hours is = ", howManyHours)
 	//Separation line between hours and schedule
 	ctx.moveTo(initialGridx + hourLine, initialGridy);
 	//ctx.lineTo(posx + hourLine, posy);
@@ -157,7 +216,7 @@ const drawInterface = (workers) => {
 	ctx.closePath();
 };
 const drawInGrid = (x, y, worker) => {
-	//console.log("in drawInGrid x = ", x, " y = ", y);
+	console.log("in drawInGrid x = ", x, " y = ", y);
 	if (x >= -0.1 && y >= 0){
 		let mx = (x * dayLineLength) + hourLine + initialGridx;
 		let my = (y * divisionHeight) + initialGridy;
@@ -167,7 +226,10 @@ const drawInGrid = (x, y, worker) => {
 		//console.log("this should be the color we about to draw = ", color);
 		//This for loop tell were to draw in the day based on the pos atributte in data
 		for (let i = 1; i <= totalWorkers; i++){
-			if (i == pos) drawHelpSquare(mx, my, color);
+			if (i == pos){
+				drawHelpSquare(mx, my, color);
+				console.log("drawin in day = ", days[x]);
+			}
 			else{
 				mx += shiftLenght;
 			};
