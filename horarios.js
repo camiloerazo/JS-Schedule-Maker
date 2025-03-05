@@ -32,7 +32,7 @@ const data = {
 			[],
 			[],
 			[],
-			[],
+			[]
 		],
 		"color": null,
 		"posInDay": 1
@@ -260,6 +260,18 @@ const getMatrixPos = (x, y) => {
 	//console.log("y in matrix ", Math.floor(y));
 	return {x: Math.floor(x), y: Math.floor(y)};
 };
+const schedule = (x, y) => {
+	let j = begin;
+	for (let i = 0; i < y; i++){
+		j += 0.5;
+	};
+	hour = transformTime(j);
+	//console.log("THIS IS THE DESIGNED HOUR: ", hour);
+	if (!data[selectedWorker]["horarios"][x].includes(hour)){
+		data[selectedWorker]["horarios"][x].push(hour);
+	};
+};
+//Checks if the interface is being clicked
 const checkIfInterfaceClicked = (x, y) => {
 	if (x > initialGridx + hourLine && y < 110){
 		//console.log("interface being clicked");
@@ -303,6 +315,7 @@ canvas.addEventListener("mousemove", (event) => {
 		const mpos = getMatrixPos(pos.x, pos.y);
 		console.log("this is the matrix pos ", mpos);
 		drawInGrid(mpos.x, mpos.y, selectedWorker);
+		schedule(mpos.x, mpos.y);
 	};
 	//console.log("im moving ",getMousePos(event));
 });
@@ -310,6 +323,17 @@ canvas.addEventListener("click", (event) => {
 	let mpos = getMousePos(event);
 	getMatrixPos(mpos.x, mpos.y);
 });
+fetch('data.json')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Failed to load JSON');
+    }
+    return response.json(); // Parse JSON
+  })
+  .then(data => {
+    console.log(data); // { name: "Alice", age: 25, city: "Wonderland" }
+  })
+  .catch(error => console.error('Error:', error));
 drawGrid(totalWorkers);
 drawInterface();
 //drawHelpSquare(initialGridx + 70 + dayLineLength * 7, 50);
