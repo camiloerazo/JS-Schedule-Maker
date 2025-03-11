@@ -323,18 +323,29 @@ canvas.addEventListener("click", (event) => {
 	let mpos = getMousePos(event);
 	getMatrixPos(mpos.x, mpos.y);
 });
-fetch('data.json')
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Failed to load JSON');
-    }
-    return response.json(); // Parse JSON
-  })
-  .then(data => {
-    console.log(data); // { name: "Alice", age: 25, city: "Wonderland" }
-  })
-  .catch(error => console.error('Error:', error));
+//Trying to get the json fron github
+const owner = 'camiloerazo';
+const repo = 'JS-Schedule-Maker';
+const path = 'data.json';
+const branch = 'main';
+const token = "token";
+
+async function getJsonData() {
+	try {
+	  const response = await fetch('https://raw.githubusercontent.com/camiloerazo/JS-Schedule-Maker/main/data.json');
+	  if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+  
+	  const jsonData = await response.json();
+	  console.log('Raw JSON data:', jsonData);
+	  return jsonData;
+	} catch (error) {
+	  console.error('Error fetching JSON:', error);
+	}
+  }
+  
+getJsonData();
+
 drawGrid(totalWorkers);
-drawInterface();
+drawInterface();	
 //drawHelpSquare(initialGridx + 70 + dayLineLength * 7, 50);
 //exportImg();

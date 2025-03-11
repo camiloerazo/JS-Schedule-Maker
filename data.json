@@ -1,93 +1,51 @@
 {
-	"julian":{
-		"horarios":[
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
+	"julian": {
+		"horarios": [
+			[], [], [], [], [], [], []
 		],
 		"color": null,
 		"posInDay": 1
 	},
-	"daniela":{
-		"horarios":[
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
+	"daniela": {
+		"horarios": [
+			[], [], [], [], [], [], []
 		],
 		"color": null,
 		"posInDay": 2
 	},
-	"pamela":{
+	"pamela": {
 		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
+			[], [], [], [], [], [], []
 		],
 		"color": null,
 		"posInDay": 3
 	},
-	"valentina":{
+	"valentina": {
 		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
+			[], [], [], [], [], [], []
 		],
 		"color": null,
 		"posInDay": 4
 	},
-	"camilo":{
+	"camilo": {
 		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
+			[], [], [], [], [], [], []
 		],
 		"color": null,
 		"posInDay": 5
 	},
-	"sara":{
+	"sara": {
 		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
+			[], [], [], [], [], [], []
 		],
 		"color": null,
 		"posInDay": 6
 	},
-	"laura":{
+	"laura": {
 		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
+			[], [], [], [], [], [], []
 		],
 		"color": null,
 		"posInDay": 7
-	}		
+	}
 }
