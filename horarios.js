@@ -23,7 +23,8 @@ let isPressed = false;
 const backgroundColor = "black";
 const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Domingo"];
 let selectedWorker;
-const data = {
+const posMatrix = [];
+const data1 = {
 	"julian":{
 		"horarios":[
 			[],
@@ -116,10 +117,28 @@ const data = {
 		"posInDay": 7
 	}		
 };
-const posMatrix = [];
-const totalWorkers = Object.keys(data).length;
-const dayLineLength = totalWorkers * shiftLenght;
-let hoursPerDay;
+
+const binId = '67d1a3748561e97a50ea96c6';
+const apiKey = '$2a$10$26MQUYwmBw7j8E164kr.YOe2CMDsXYQDGyK9qo5CzAuGe428N30IW';
+
+async function getJsonData() {
+  try {
+    const response = await fetch(`https://api.jsonbin.io/v3/b/${binId}/latest`, {
+      headers: { 'X-Master-Key': apiKey }
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch data');
+
+    const data = await response.json();
+    //console.log('Schedule data:', data.record);
+    return data.record; // Your JSON content
+  } catch (error) {
+    console.error('Error fetching JSON:', error);
+  }
+}
+
+main();
+
 //Functions
 const transformTime = (hour) => {
 	if (hour > 12.5){
@@ -146,7 +165,7 @@ const drawHelpSquare = (x, y, color) => {
 	ctx.fillRect(x, y, 30, 30);
 	ctx.fillStyle = "black";
 };
-const drawGrid = (totalWorkers) => { 
+const drawGrid = (totalWorkers, dayLineLength, hourLine) => { 
 	ctx.fillStyle = "black"; // Set fill color to white
 	ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill entire canvas
 	ctx.fillStyle = "white";
@@ -170,7 +189,7 @@ const drawGrid = (totalWorkers) => {
 		howManyHours++;
 	};
 	hoursPerDay = howManyHours;
-	console.log("total hours is = ", howManyHours)
+	//console.log("total hours is = ", howManyHours)
 	//Separation line between hours and schedule
 	ctx.moveTo(initialGridx + hourLine, initialGridy);
 	//ctx.lineTo(posx + hourLine, posy);
@@ -190,7 +209,7 @@ const drawGrid = (totalWorkers) => {
 	ctx.closePath();
 	ctx.stroke();
 };
-const drawInterface = (workers) => {
+const drawInterface = (data, dayLineLength) => {
 	let x = initialGridx + hourLine;
 	let y = initialInterfacey;
 	ctx.beginPath();
@@ -215,8 +234,8 @@ const drawInterface = (workers) => {
 	};
 	ctx.closePath();
 };
-const drawInGrid = (x, y, worker) => {
-	console.log("in drawInGrid x = ", x, " y = ", y);
+const drawInGrid = (x, y, worker, dayLineLength, data, totalWorkers) => {
+	//console.log("in drawInGrid x = ", x, " y = ", y);
 	if (x >= -0.1 && y >= 0){
 		let mx = (x * dayLineLength) + hourLine + initialGridx;
 		let my = (y * divisionHeight) + initialGridy;
@@ -228,7 +247,7 @@ const drawInGrid = (x, y, worker) => {
 		for (let i = 1; i <= totalWorkers; i++){
 			if (i == pos){
 				drawHelpSquare(mx, my, color);
-				console.log("drawin in day = ", days[x]);
+				//console.log("drawin in day = ", days[x]);
 			}
 			else{
 				mx += shiftLenght;
@@ -236,7 +255,7 @@ const drawInGrid = (x, y, worker) => {
 		};
 	};
 };
-const drawStatistics = () => {
+const drawStatistics = (data) => {
 	let x = initialGridx;
 	let y = initialInfoY;
 	for (worker in data){
@@ -253,14 +272,14 @@ const exportImg = () => {
 	link.click();
 };
 //Function to get the position in the matrix
-const getMatrixPos = (x, y) => {
+const getMatrixPos = (x, y, dayLineLength) => {
 	x = (x - (initialGridx + hourLine)) / dayLineLength;
 	y = (y - initialGridy) / divisionHeight;
 	//console.log("x in matrix ", Math.floor(x));
 	//console.log("y in matrix ", Math.floor(y));
 	return {x: Math.floor(x), y: Math.floor(y)};
 };
-const schedule = (x, y) => {
+const schedule = (x, y, data) => {
 	let j = begin;
 	for (let i = 0; i < y; i++){
 		j += 0.5;
@@ -272,7 +291,7 @@ const schedule = (x, y) => {
 	};
 };
 //Checks if the interface is being clicked
-const checkIfInterfaceClicked = (x, y) => {
+const checkIfInterfaceClicked = (x, y, dayLineLength, data) => {
 	if (x > initialGridx + hourLine && y < 110){
 		//console.log("interface being clicked");
 		//This function returns the name of the worker who is being clicked
@@ -296,56 +315,50 @@ const getMousePos = (event) => {
 		y: event.clientY - rect.top
 	};
 };
-canvas.addEventListener("mousedown", (event) => {
-	isPressed = true;
-	const pos = getMousePos(event);
-	//console.log("this is the pos of the click ", pos);
-	let name = checkIfInterfaceClicked(pos.x, pos.y);
-	if (name){
-		selectedWorker = name;
-		drawStatistics();
-	};
-});
+
 canvas.addEventListener("mouseup", (event) => {
 	isPressed = false;
 });
-canvas.addEventListener("mousemove", (event) => {
-	if (isPressed == true){
-		const pos = getMousePos(event);
-		const mpos = getMatrixPos(pos.x, pos.y);
-		console.log("this is the matrix pos ", mpos);
-		drawInGrid(mpos.x, mpos.y, selectedWorker);
-		schedule(mpos.x, mpos.y);
-	};
-	//console.log("im moving ",getMousePos(event));
-});
+
 canvas.addEventListener("click", (event) => {
 	let mpos = getMousePos(event);
 	getMatrixPos(mpos.x, mpos.y);
 });
-//Trying to get the json fron github
-const owner = 'camiloerazo';
-const repo = 'JS-Schedule-Maker';
-const path = 'data.json';
-const branch = 'main';
-const token = "token";
 
-async function getJsonData() {
-	try {
-	  const response = await fetch('https://raw.githubusercontent.com/camiloerazo/JS-Schedule-Maker/main/data.json');
-	  if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-  
-	  const jsonData = await response.json();
-	  console.log('Raw JSON data:', jsonData);
-	  return jsonData;
-	} catch (error) {
-	  console.error('Error fetching JSON:', error);
+async function main(){
+	const data = await getJsonData();
+	if (!data){
+		console.log("Data fetching failed, returning");
+		return;
 	}
-  }
-  
-getJsonData();
 
-drawGrid(totalWorkers);
-drawInterface();	
-//drawHelpSquare(initialGridx + 70 + dayLineLength * 7, 50);
-//exportImg();
+	const totalWorkers = Object.keys(data).length;
+	const dayLineLength = totalWorkers * shiftLenght;
+	let hoursPerDay;
+
+	canvas.addEventListener("mousedown", (event) => {
+		isPressed = true;
+		const pos = getMousePos(event);
+		//console.log("this is the pos of the click ", pos);
+		let name = checkIfInterfaceClicked(pos.x, pos.y, dayLineLength, data);
+		if (name){
+			selectedWorker = name;
+			drawStatistics(data);
+		};
+	});
+
+	canvas.addEventListener("mousemove", (event) => {
+		if (isPressed == true){
+			const pos = getMousePos(event);
+			const mpos = getMatrixPos(pos.x, pos.y, dayLineLength);
+			//console.log("this is the matrix pos ", mpos);
+			drawInGrid(mpos.x, mpos.y, selectedWorker, dayLineLength, data, totalWorkers);
+			schedule(mpos.x, mpos.y, data);
+		};
+		//console.log("im moving ",getMousePos(event));
+	});
+
+	drawGrid(totalWorkers, dayLineLength, hourLine);
+	drawInterface(data, dayLineLength);	
+}
+main();
