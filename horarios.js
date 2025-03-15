@@ -137,8 +137,6 @@ async function getJsonData() {
   }
 }
 
-main();
-
 //Functions
 const transformTime = (hour) => {
 	if (hour > 12.5){
@@ -209,6 +207,10 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 	ctx.closePath();
 	ctx.stroke();
 };
+//Draws the color indicanting the hours of each worker
+const drawColors = (data, canvas) => {
+	console.log("Hello");
+}
 const drawInterface = (data, dayLineLength) => {
 	let x = initialGridx + hourLine;
 	let y = initialInterfacey;
@@ -264,6 +266,11 @@ const drawStatistics = (data) => {
 		x += 150;
 	}
 };
+const clearCanvas = (ctx, canvas, bc) => {
+	console.log("this is the bc = ", bc);
+	ctx.fillStyle = bc;
+	ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
 //Funct to export as image
 const exportImg = () => {
 	const link = document.createElement("a");
@@ -284,8 +291,8 @@ const schedule = (x, y, data) => {
 	for (let i = 0; i < y; i++){
 		j += 0.5;
 	};
-	hour = transformTime(j);
-	//console.log("THIS IS THE DESIGNED HOUR: ", hour);
+	let hour = transformTime(j);
+	console.log("THIS IS THE DESIGNED HOUR: ", hour);
 	if (!data[selectedWorker]["horarios"][x].includes(hour)){
 		data[selectedWorker]["horarios"][x].push(hour);
 	};
@@ -307,7 +314,22 @@ const checkIfInterfaceClicked = (x, y, dayLineLength, data) => {
 		return false;
 	};
 };
-//Mouse events
+//Function to remove workHours
+const removeHourFromData = (x, y, dayLineLength, data) => {
+	//Is the index of the day
+	//Y must be calculated
+	console.log("This are the x and the y = ", x, y);
+	let j = begin;
+	for (let i = 0; i < y; i++){
+		j += 0.5;
+	};
+	hour = transformTime(j);
+	console.log("This is the hour that should be removed = ", hour);
+	//When i delete the hour i must update the grid drawing
+	//console.log("This is the selected worker = ", selectedWorker);
+	data[selectedWorker]["horarios"][x] = data[selectedWorker]["horarios"][x].filter(val => val != hour);
+	console.log("This is the new data = ", data);
+};
 const getMousePos = (event) => {
 	const rect = canvas.getBoundingClientRect();
 	return {
@@ -315,18 +337,19 @@ const getMousePos = (event) => {
 		y: event.clientY - rect.top
 	};
 };
-
+//Mouse events
 canvas.addEventListener("mouseup", (event) => {
 	isPressed = false;
 });
 
+/*
 canvas.addEventListener("click", (event) => {
 	let mpos = getMousePos(event);
 	getMatrixPos(mpos.x, mpos.y);
 });
-
+*/
 async function main(){
-	const data = await getJsonData();
+	data = await getJsonData();
 	if (!data){
 		console.log("Data fetching failed, returning");
 		return;
@@ -356,6 +379,20 @@ async function main(){
 			schedule(mpos.x, mpos.y, data);
 		};
 		//console.log("im moving ",getMousePos(event));
+	});
+
+	canvas.addEventListener("contextmenu", (event) => {
+		event.preventDefault();
+    	event.stopPropagation(); // Prevent bubbling
+
+    	const x = event.offsetX;
+    	const y = event.offsetY;
+    	const pos = getMatrixPos(x, y, dayLineLength);
+
+    	console.log("This is the data before the remove= ", data);
+    	removeHourFromData(pos.x, pos.y, dayLineLength, data);
+		clearCanvas(ctx, canvas, backgroundColor);
+		//drawGrid(totalWorkers, dayLineLength, hourLine);
 	});
 
 	drawGrid(totalWorkers, dayLineLength, hourLine);
