@@ -24,7 +24,7 @@ const backgroundColor = "black";
 const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Domingo"];
 let selectedWorker;
 const posMatrix = [];
-const data1 = {
+const data = {
 	"julian":{
 		"horarios":[
 			[],
@@ -208,8 +208,25 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 	ctx.stroke();
 };
 //Draws the color indicanting the hours of each worker
-const drawColors = (data, canvas) => {
-	console.log("Hello");
+const drawColors = (data, shiftLenght, igx, igy, dll, hourLine) => {
+	for (const worker in data){
+		const color = data[worker]["color"];
+		const posid = data[worker]["posInday"];
+		let l = data[worker]["horarios"].length;
+		for (let i = 0; i < l; i++){
+			let x = (igx + hourLine) + (i * dll) + (shiftLenght * (data[worker]["posInDay"] - 1));
+			let y = igy;
+			//console.log("im in the 2cond for and x =", x);
+			//console.log("y = ", y);
+			for (const hour of data[worker]["horarios"][i]){
+				//Here it draws the hour
+				//We take the shiftLenght as the square size
+				//console.log("this is the worker when drawin square =", worker);
+				drawHelpSquare(x, y, "red");
+				
+			}
+		}
+	}
 }
 const drawInterface = (data, dayLineLength) => {
 	let x = initialGridx + hourLine;
@@ -349,7 +366,7 @@ canvas.addEventListener("click", (event) => {
 });
 */
 async function main(){
-	data = await getJsonData();
+	//data = await getJsonData();
 	if (!data){
 		console.log("Data fetching failed, returning");
 		return;
@@ -360,14 +377,16 @@ async function main(){
 	let hoursPerDay;
 
 	canvas.addEventListener("mousedown", (event) => {
-		isPressed = true;
-		const pos = getMousePos(event);
-		//console.log("this is the pos of the click ", pos);
-		let name = checkIfInterfaceClicked(pos.x, pos.y, dayLineLength, data);
-		if (name){
-			selectedWorker = name;
-			drawStatistics(data);
-		};
+		if (event.button == 0){
+			isPressed = true;
+			const pos = getMousePos(event);
+			//console.log("this is the pos of the click ", pos);
+			let name = checkIfInterfaceClicked(pos.x, pos.y, dayLineLength, data);
+			if (name){
+				selectedWorker = name;
+				drawStatistics(data);
+			};
+		}
 	});
 
 	canvas.addEventListener("mousemove", (event) => {
@@ -391,8 +410,9 @@ async function main(){
 
     	console.log("This is the data before the remove= ", data);
     	removeHourFromData(pos.x, pos.y, dayLineLength, data);
-		clearCanvas(ctx, canvas, backgroundColor);
+		//clearCanvas(ctx, canvas, backgroundColor);
 		//drawGrid(totalWorkers, dayLineLength, hourLine);
+		drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine);
 	});
 
 	drawGrid(totalWorkers, dayLineLength, hourLine);
