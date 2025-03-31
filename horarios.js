@@ -9,8 +9,8 @@ canvas.height = 2000 * ratio;
 //ctx.scale(ratio, ratio);
 ctx.font = "25px Arial";
 //Data
-const begin = 7;
-const end = 19;
+const begin = 9;
+const end = 16;
 const initialGridx = 50;
 const initialGridy = 150;
 const initialInterfacey = 20;
@@ -208,22 +208,30 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 	ctx.stroke();
 };
 //Draws the color indicanting the hours of each worker
-const drawColors = (data, shiftLenght, igx, igy, dll, hourLine) => {
+const drawColors = (data, shiftLenght, igx, igy, dll, hourLine, divisionHeight, begin) => {
 	for (const worker in data){
 		const color = data[worker]["color"];
-		const posid = data[worker]["posInday"];
 		let l = data[worker]["horarios"].length;
 		for (let i = 0; i < l; i++){
 			let x = (igx + hourLine) + (i * dll) + (shiftLenght * (data[worker]["posInDay"] - 1));
 			let y = igy;
 			//console.log("im in the 2cond for and x =", x);
 			//console.log("y = ", y);
-			for (const hour of data[worker]["horarios"][i]){
+			for (let hour of data[worker]["horarios"][i]){
 				//Here it draws the hour
 				//We take the shiftLenght as the square size
 				//console.log("this is the worker when drawin square =", worker);
-				drawHelpSquare(x, y, color);
-				
+				//drawHelpSquare(x, y, color);
+				//I need to start drawing the hours in the day
+				let [hours, minutes] = hour.split(":").map(Number);
+				if (hours >= 1){
+					hours += 12;
+				}
+				let dif = hours - begin;
+				console.log("trying to re draw the hour :", hour);
+				console.log("new hour = ", hours);
+				console.log(" dif = ", dif);
+				drawHelpSquare(x, y + (dif * divisionHeight), color);
 			}
 		}
 	}
@@ -343,11 +351,11 @@ const removeHourFromData = (x, y, dayLineLength, data) => {
 		j += 0.5;
 	};
 	hour = transformTime(j);
-	console.log("This is the hour that should be removed = ", hour);
+	//console.log("This is the hour that should be removed = ", hour);
 	//When i delete the hour i must update the grid drawing
 	//console.log("This is the selected worker = ", selectedWorker);
 	data[selectedWorker]["horarios"][x] = data[selectedWorker]["horarios"][x].filter(val => val != hour);
-	console.log("This is the new data = ", data);
+	//console.log("This is the new data = ", data);
 };
 const getMousePos = (event) => {
 	const rect = canvas.getBoundingClientRect();
@@ -395,8 +403,8 @@ async function main(){
 		if (isPressed == true){
 			const pos = getMousePos(event);
 			const mpos = getMatrixPos(pos.x, pos.y, dayLineLength);
-			console.log("this is the pos ", pos);
-			console.log("this is the matrix pos", mpos);
+			//console.log("this is the pos ", pos);
+			//console.log("this is the matrix pos", mpos);
 			drawInGrid(mpos.x, mpos.y, selectedWorker, dayLineLength, data, totalWorkers);
 			schedule(mpos.x, mpos.y, data);
 		};
@@ -415,7 +423,7 @@ async function main(){
     	removeHourFromData(pos.x, pos.y, dayLineLength, data);
 		//clearCanvas(ctx, canvas, backgroundColor);
 		//drawGrid(totalWorkers, dayLineLength, hourLine);
-		drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine);
+		drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
 	});
 
 	drawGrid(totalWorkers, dayLineLength, hourLine);
