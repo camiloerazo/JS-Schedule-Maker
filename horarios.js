@@ -222,7 +222,7 @@ const drawColors = (data, shiftLenght, igx, igy, dll, hourLine) => {
 				//Here it draws the hour
 				//We take the shiftLenght as the square size
 				//console.log("this is the worker when drawin square =", worker);
-				drawHelpSquare(x, y, "red");
+				drawHelpSquare(x, y, color);
 				
 			}
 		}
@@ -304,6 +304,8 @@ const getMatrixPos = (x, y, dayLineLength) => {
 	return {x: Math.floor(x), y: Math.floor(y)};
 };
 const schedule = (x, y, data) => {
+	//x and y must be checked so no invalid scheduling happens
+	if (x < 0 || y < 0) return;
 	let j = begin;
 	for (let i = 0; i < y; i++){
 		j += 0.5;
@@ -393,7 +395,8 @@ async function main(){
 		if (isPressed == true){
 			const pos = getMousePos(event);
 			const mpos = getMatrixPos(pos.x, pos.y, dayLineLength);
-			//console.log("this is the matrix pos ", mpos);
+			console.log("this is the pos ", pos);
+			console.log("this is the matrix pos", mpos);
 			drawInGrid(mpos.x, mpos.y, selectedWorker, dayLineLength, data, totalWorkers);
 			schedule(mpos.x, mpos.y, data);
 		};
