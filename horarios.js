@@ -9,8 +9,8 @@ canvas.height = 2000 * ratio;
 //ctx.scale(ratio, ratio);
 ctx.font = "25px Arial";
 //Data
-const begin = 9;
-const end = 16;
+const begin = 7;
+const end = 21;
 const initialGridx = 50;
 const initialGridy = 150;
 const initialInterfacey = 20;
@@ -149,6 +149,17 @@ const transformTime = (hour) => {
 		return Math.floor(hour).toString() + ":30";
 	};
 };
+const transformTime2 = (hour) => {
+    let period = hour >= 12 ? "pm" : "am"; // Determine if it's AM or PM
+    let adjustedHour = hour > 12 ? hour - 12 : hour; // Convert to 12-hour format
+    adjustedHour = hour === 12 || hour === 12.5 ? hour : adjustedHour; // Handle noon (12:00pm, 12:30pm) correctly
+    adjustedHour = adjustedHour === 0 ? 12 : adjustedHour; // Handle midnight (0:00) as 12 AM
+
+    let hourPart = Math.floor(adjustedHour); // Extract the hour part
+    let minutePart = (adjustedHour % 1) === 0.5 ? ":30" : ":00"; // Determine minutes
+
+    return `${hourPart}${minutePart}:${period}`; // Return formatted time as a string
+};
 const addRow = (matrix, days) => {
 	const row = [];
 	for (let i = 0; i < days; i++){
@@ -217,49 +228,44 @@ const drawColors = (data, shiftLenght, igx, igy, dll, hourLine, divisionHeight, 
 			let y = igy;
 			//console.log("im in the 2cond for and x =", x);
 			//console.log("y = ", y);
-			for (let hour of data[worker]["horarios"][i]){
-				//Here it draws the hour
-				//We take the shiftLenght as the square size
-				//console.log("this is the worker when drawin square =", worker);
-				//drawHelpSquare(x, y, color);
-				//I need to start drawing the hours in the day
-				let [hours, minutes] = hour.split(":").map(Number);
-				if (hours >= 1){
-					hours += 12;
+			for (let hour of data[worker]["horarios"][i]){ 
+				let yn = y;
+				for (let i = begin; i < hour; i += 0.5){
+					yn += divisionHeight;
 				}
-				let dif = hours - begin;
-				console.log("trying to re draw the hour :", hour);
-				console.log("new hour = ", hours);
-				console.log(" dif = ", dif);
-				drawHelpSquare(x, y + (dif * divisionHeight), color);
+				drawHelpSquare(x,yn,color);
 			}
 		}
 	}
 }
 const drawInterface = (data, dayLineLength) => {
 	let x = initialGridx + hourLine;
-	let y = initialInterfacey;
-	ctx.beginPath();
-	ctx.moveTo(initialGridx + hourLine, initialInterfacey);
-	drawHelpSquare(initialGridx + hourLine, initialInterfacey);
-	//Iterating over workers
-	for (let worker in data){
-		if (data[worker]["color"] != null) {
-			let color  = data[worker];
-		}else {
-			const r = Math.floor((Math.random() * 255));
-			const g = Math.floor((Math.random() * 255));
-			const b = Math.floor((Math.random() * 255));
-			let color = `rgb(${r} ${g} ${b})`;
-			data[worker].color = color;
-			//console.log(color);
-			ctx.fillStyle = color;
-			ctx.fillRect(x,y,30,30);
-			ctx.fillText(worker, x + 40, y + 10);
-			x += dayLineLength;
-		};
-	};
-	ctx.closePath();
+    let y = initialInterfacey;
+    ctx.closePath();
+    ctx.beginPath();
+    ctx.moveTo(initialGridx + hourLine, initialInterfacey);
+
+    // Iterate over workers
+    for (let worker in data) {
+        let color = data[worker]["color"];
+        if (color == null) {
+            // Generate a random color if not already set
+            const r = Math.floor((Math.random() * 255));
+            const g = Math.floor((Math.random() * 255));
+            const b = Math.floor((Math.random() * 255));
+            color = `rgb(${r} ${g} ${b})`;
+            data[worker].color = color;
+        }
+
+        // Draw the worker's color and name
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, 30, 30);
+        ctx.fillStyle = "white"; // Set text color to white for visibility
+        ctx.fillText(worker, x + 40, y + 20);
+        x += dayLineLength;
+    }
+
+    ctx.closePath();
 };
 const drawInGrid = (x, y, worker, dayLineLength, data, totalWorkers) => {
 	//console.log("in drawInGrid x = ", x, " y = ", y);
@@ -318,7 +324,7 @@ const schedule = (x, y, data) => {
 	for (let i = 0; i < y; i++){
 		j += 0.5;
 	};
-	let hour = transformTime(j);
+	let hour = j;//transformTime2(j);
 	console.log("THIS IS THE DESIGNED HOUR: ", hour);
 	if (!data[selectedWorker]["horarios"][x].includes(hour)){
 		data[selectedWorker]["horarios"][x].push(hour);
@@ -350,7 +356,7 @@ const removeHourFromData = (x, y, dayLineLength, data) => {
 	for (let i = 0; i < y; i++){
 		j += 0.5;
 	};
-	hour = transformTime(j);
+	hour = j;//transformTime(j);
 	//console.log("This is the hour that should be removed = ", hour);
 	//When i delete the hour i must update the grid drawing
 	//console.log("This is the selected worker = ", selectedWorker);
@@ -421,9 +427,11 @@ async function main(){
 
     	console.log("This is the data before the remove= ", data);
     	removeHourFromData(pos.x, pos.y, dayLineLength, data);
-		//clearCanvas(ctx, canvas, backgroundColor);
-		//drawGrid(totalWorkers, dayLineLength, hourLine);
+		clearCanvas(ctx, canvas, backgroundColor);
+		drawGrid(totalWorkers, dayLineLength, hourLine);
 		drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
+		drawStatistics(data);
+		drawInterface(data,dayLineLength);
 	});
 
 	drawGrid(totalWorkers, dayLineLength, hourLine);
