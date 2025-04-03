@@ -25,7 +25,7 @@ const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Do
 let selectedWorker;
 const posMatrix = [];
 const data = {
-	"julian":{
+	"Angela M":{
 		"horarios":[
 			[],
 			[],
@@ -38,7 +38,7 @@ const data = {
 		"color": null,
 		"posInDay": 1
 	},
-	"daniela":{
+	"Julian T":{
 		"horarios":[
 			[],
 			[],
@@ -51,7 +51,7 @@ const data = {
 		"color": null,
 		"posInDay": 2
 	},
-	"pamela":{
+	"Jeferson":{
 		"horarios": [
 			[],
 			[],
@@ -63,58 +63,6 @@ const data = {
 		],
 		"color": null,
 		"posInDay": 3
-	},
-	"valentina":{
-		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
-		],
-		"color": null,
-		"posInDay": 4
-	},
-	"camilo":{
-		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
-		],
-		"color": null,
-		"posInDay": 5
-	},
-	"sara":{
-		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
-		],
-		"color": null,
-		"posInDay": 6
-	},
-	"laura":{
-		"horarios": [
-			[],
-			[],
-			[],
-			[],
-			[],
-			[],
-			[]
-		],
-		"color": null,
-		"posInDay": 7
 	}		
 };
 
@@ -194,7 +142,7 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 		ctx.lineTo(horizontalLine + initialGridx, posy); //Draws hour line
 		ctx.moveTo(posx, posy);
 		ctx.fillText(transformTime(i), posx, posy);
-		addRow(posMatrix, days.length); //Adds a row to the posMatrix with the number of workers
+		//addRow(posMatrix, days.length); //Adds a row to the posMatrix with the number of workers
 		howManyHours++;
 	};
 	hoursPerDay = howManyHours;
@@ -215,6 +163,7 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 		ctx.lineTo(posx, (howManyHours * divisionHeight) + initialGridy);
 		posx += dayLineLength;
 	};
+	console.log("Im in draw grid this is the last x i think = ", posx);
 	ctx.closePath();
 	ctx.stroke();
 };
@@ -293,9 +242,15 @@ const drawStatistics = (data) => {
 	let y = initialInfoY;
 	const hoursWorked = getTotalHoursWorked(data);
 	for (worker in data){
+		let hw = hoursWorked[worker];
 		ctx.fillStyle = data[worker].color;
 		ctx.fillText(worker, x, y);
-		ctx.fillText(hoursWorked[worker], x + 100, y);
+		if (parseFloat(hw) % 1 !== 0){//is not int //'12.5'
+			hw = parseInt(hw);
+			ctx.fillText(hw.toString() + ":30 h", x + 100, y);	
+		}else{
+			ctx.fillText(hw + "h", x + 100, y);
+		}
 		x += 250;
 	}
 };
@@ -353,7 +308,7 @@ const checkIfInterfaceClicked = (x, y, dayLineLength, data) => {
 const removeHourFromData = (x, y, dayLineLength, data) => {
 	//Is the index of the day
 	//Y must be calculated
-	console.log("This are the x and the y = ", x, y);
+	//console.log("This are the x and the y = ", x, y);
 	let j = begin;
 	for (let i = 0; i < y; i++){
 		j += 0.5;
@@ -375,7 +330,7 @@ const getTotalHoursWorked = (data) => {
 			}
 		}
 	}
-	console.log(hoursWorked);
+	//console.log(hoursWorked);
 	return hoursWorked;
 }
 const getMousePos = (event) => {
@@ -400,7 +355,7 @@ canvas.addEventListener("click", (event) => {
 async function main(){
 	//data = await getJsonData();
 	if (!data){
-		console.log("Data fetching failed, returning");
+		//console.log("Data fetching failed, returning");
 		return;
 	}
 
@@ -434,12 +389,12 @@ async function main(){
 			//console.log("this is the matrix pos", mpos);
 			drawInGrid(mpos.x, mpos.y, selectedWorker, dayLineLength, data, totalWorkers);
 			schedule(mpos.x, mpos.y, data);
+			clearCanvas(ctx, canvas, backgroundColor);
+			drawGrid(totalWorkers, dayLineLength, hourLine);
+			drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
+			drawStatistics(data);
+			drawInterface(data,dayLineLength);
 		};
-		clearCanvas(ctx, canvas, backgroundColor);
-		drawGrid(totalWorkers, dayLineLength, hourLine);
-		drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
-		drawStatistics(data);
-		drawInterface(data,dayLineLength);
 		//console.log("im moving ",getMousePos(event));
 	});
 
@@ -451,7 +406,7 @@ async function main(){
     	const y = event.offsetY;
     	const pos = getMatrixPos(x, y, dayLineLength);
 
-    	console.log("This is the data before the remove= ", data);
+    	//console.log("This is the data before the remove= ", data);
     	removeHourFromData(pos.x, pos.y, dayLineLength, data);
 		clearCanvas(ctx, canvas, backgroundColor);
 		drawGrid(totalWorkers, dayLineLength, hourLine);
