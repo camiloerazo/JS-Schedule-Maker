@@ -157,13 +157,12 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 	ctx.moveTo(initialGridx + hourLine, posy);
 	//Drawing the days and the separation line between them 
 	//console.log("total hours per day ", howManyHours);
-	for (let i = 0; i < days.length; i++){
-		ctx.fillText(days[i], posx, posy);
+	for (let i = 0; i <= days.length; i++){
+		ctx.fillText(i < days.length ? days[i]:"", posx, posy);
 		ctx.moveTo(posx, posy);
 		ctx.lineTo(posx, (howManyHours * divisionHeight) + initialGridy);
 		posx += dayLineLength;
 	};
-	console.log("Im in draw grid this is the last x i think = ", posx);
 	ctx.closePath();
 	ctx.stroke();
 };
