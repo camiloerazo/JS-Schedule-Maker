@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
 	"julian": {
 		"horarios": [
@@ -49,3 +50,56 @@
 		"posInDay": 7
 	}
 }
+=======
+{
+	"julian": {
+		"horarios": [
+			[], [], [], [], [], [], []
+		],
+		"color": null,
+		"posInDay": 1
+	},
+	"daniela": {
+		"horarios": [
+			[], [], [], [], [], [], []
+		],
+		"color": null,
+		"posInDay": 2
+	},
+	"pamela": {
+		"horarios": [
+			[], [], [], [], [], [], []
+		],
+		"color": null,
+		"posInDay": 3
+	},
+	"valentina": {
+		"horarios": [
+			[], [], [], [], [], [], []
+		],
+		"color": null,
+		"posInDay": 4
+	},
+	"camilo": {
+		"horarios": [
+			[], [], [], [], [], [], []
+		],
+		"color": null,
+		"posInDay": 5
+	},
+	"sara": {
+		"horarios": [
+			[], [], [], [], [], [], []
+		],
+		"color": null,
+		"posInDay": 6
+	},
+	"laura": {
+		"horarios": [
+			[], [], [], [], [], [], []
+		],
+		"color": null,
+		"posInDay": 7
+	}
+}
+>>>>>>> alternative-pc
