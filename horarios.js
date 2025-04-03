@@ -291,10 +291,12 @@ const drawInGrid = (x, y, worker, dayLineLength, data, totalWorkers) => {
 const drawStatistics = (data) => {
 	let x = initialGridx;
 	let y = initialInfoY;
+	const hoursWorked = getTotalHoursWorked(data);
 	for (worker in data){
 		ctx.fillStyle = data[worker].color;
 		ctx.fillText(worker, x, y);
-		x += 150;
+		ctx.fillText(hoursWorked[worker], x + 100, y);
+		x += 250;
 	}
 };
 const clearCanvas = (ctx, canvas, bc) => {
@@ -374,6 +376,7 @@ const getTotalHoursWorked = (data) => {
 		}
 	}
 	console.log(hoursWorked);
+	return hoursWorked;
 }
 const getMousePos = (event) => {
 	const rect = canvas.getBoundingClientRect();
@@ -415,6 +418,11 @@ async function main(){
 				selectedWorker = name;
 				drawStatistics(data);
 			};
+			clearCanvas(ctx, canvas, backgroundColor);
+			drawGrid(totalWorkers, dayLineLength, hourLine);
+			drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
+			drawStatistics(data);
+			drawInterface(data,dayLineLength);
 		}
 	});
 
@@ -427,6 +435,11 @@ async function main(){
 			drawInGrid(mpos.x, mpos.y, selectedWorker, dayLineLength, data, totalWorkers);
 			schedule(mpos.x, mpos.y, data);
 		};
+		clearCanvas(ctx, canvas, backgroundColor);
+		drawGrid(totalWorkers, dayLineLength, hourLine);
+		drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
+		drawStatistics(data);
+		drawInterface(data,dayLineLength);
 		//console.log("im moving ",getMousePos(event));
 	});
 
@@ -449,6 +462,6 @@ async function main(){
 
 	drawGrid(totalWorkers, dayLineLength, hourLine);
 	drawInterface(data, dayLineLength);
-	addReferenceLines(ctx, initialGridx, initialGridy, divisionHeight, begin, hourLine);
+	//addReferenceLines(ctx, initialGridx, initialGridy, divisionHeight, begin, hourLine);
 }
 main();
