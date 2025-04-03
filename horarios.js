@@ -9,7 +9,7 @@ canvas.height = 2000 * ratio;
 //ctx.scale(ratio, ratio);
 ctx.font = "25px Arial";
 //Data
-const begin = 7;
+const begin = 9;
 const end = 21;
 const initialGridx = 50;
 const initialGridy = 150;
@@ -363,6 +363,18 @@ const removeHourFromData = (x, y, dayLineLength, data) => {
 	data[selectedWorker]["horarios"][x] = data[selectedWorker]["horarios"][x].filter(val => val != hour);
 	//console.log("This is the new data = ", data);
 };
+const getTotalHoursWorked = (data) => {
+	let hoursWorked = {};
+	for (let worker in data){
+		hoursWorked[worker] = 0;
+		for (let day in data[worker]["horarios"]){
+			for (hour in data[worker]["horarios"][day]){
+				hoursWorked[worker] += 0.5;
+			}
+		}
+	}
+	console.log(hoursWorked);
+}
 const getMousePos = (event) => {
 	const rect = canvas.getBoundingClientRect();
 	return {
@@ -370,6 +382,7 @@ const getMousePos = (event) => {
 		y: event.clientY - rect.top
 	};
 };
+
 //Mouse events
 canvas.addEventListener("mouseup", (event) => {
 	isPressed = false;
@@ -435,6 +448,7 @@ async function main(){
 	});
 
 	drawGrid(totalWorkers, dayLineLength, hourLine);
-	drawInterface(data, dayLineLength);	
+	drawInterface(data, dayLineLength);
+	addReferenceLines(ctx, initialGridx, initialGridy, divisionHeight, begin, hourLine);
 }
 main();
