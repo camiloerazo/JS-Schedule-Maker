@@ -121,7 +121,7 @@ const addRow = (matrix, days) => {
 const drawHelpSquare = (x, y, color) => {
 	ctx.fillStyle = color;
 	ctx.fillRect(x, y, 30, 30);
-	ctx.strokeStyle = "blue";
+	ctx.strokeStyle = "lightblue";
 	ctx.strokeRect(x, y, 30, 30);
 	ctx.fillStyle = "black";
 };
@@ -161,11 +161,26 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 	//Drawing the days and the separation line between them 
 	//console.log("total hours per day ", howManyHours);
 	for (let i = 0; i <= days.length; i++){
-		ctx.fillText(i < days.length ? days[i]:"", posx, posy);
-		ctx.moveTo(posx, posy);
-		ctx.lineTo(posx, (howManyHours * divisionHeight) + initialGridy);
+		if (i == days.length) break;
+		if (ctx.measureText(days[i]).width > dayLineLength){
+			const firstFour = days[i].substring(0, 4);
+			ctx.fillText(i < days.length ? firstFour:"", posx, posy);
+			ctx.moveTo(posx, posy);
+			ctx.lineTo(posx, (howManyHours * divisionHeight) + initialGridy);
+		}else{
+			ctx.fillText(i < days.length ? days[i]:"", posx, posy);
+			ctx.moveTo(posx, posy);
+			ctx.lineTo(posx, (howManyHours * divisionHeight) + initialGridy);
+		}
 		posx += dayLineLength;
 	};
+	console.log("this is the last posx = ", posx);
+	console.log("this is the last posy = " ,posy);
+	ctx.moveTo(posx,posy);
+	ctx.lineTo(posx, posy + (howManyHours * divisionHeight));
+	for (let i = begin; i <= end; i += 0.5){
+		//ctx.lineTo(posx, posy);
+	}
 	ctx.closePath();
 	ctx.stroke();
 };
