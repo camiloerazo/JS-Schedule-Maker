@@ -121,6 +121,8 @@ const addRow = (matrix, days) => {
 const drawHelpSquare = (x, y, color) => {
 	ctx.fillStyle = color;
 	ctx.fillRect(x, y, 30, 30);
+	ctx.strokeStyle = "blue";
+	ctx.strokeRect(x, y, 30, 30);
 	ctx.fillStyle = "black";
 };
 const drawGrid = (totalWorkers, dayLineLength, hourLine) => { 
