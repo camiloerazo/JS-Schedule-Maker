@@ -163,7 +163,7 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 	for (let i = 0; i <= days.length; i++){
 		if (i == days.length) break;
 		if (ctx.measureText(days[i]).width > dayLineLength){
-			const firstFour = days[i].substring(0, 4);
+			const firstFour = days[i].substring(0, 6);
 			ctx.fillText(i < days.length ? firstFour:"", posx, posy);
 			ctx.moveTo(posx, posy);
 			ctx.lineTo(posx, (howManyHours * divisionHeight) + initialGridy);
@@ -174,13 +174,8 @@ const drawGrid = (totalWorkers, dayLineLength, hourLine) => {
 		}
 		posx += dayLineLength;
 	};
-	console.log("this is the last posx = ", posx);
-	console.log("this is the last posy = " ,posy);
 	ctx.moveTo(posx,posy);
 	ctx.lineTo(posx, posy + (howManyHours * divisionHeight));
-	for (let i = begin; i <= end; i += 0.5){
-		//ctx.lineTo(posx, posy);
-	}
 	ctx.closePath();
 	ctx.stroke();
 };
@@ -223,13 +218,13 @@ const drawInterface = (data, dayLineLength) => {
             data[worker].color = color;
         }
         // Draw the worker's color and name
-		console.log("initial x when drawing the interface for worker = ", worker, " is =", x);
+		//console.log("initial x when drawing the interface for worker = ", worker, " is =", x);
         ctx.fillStyle = color;
         ctx.fillRect(x, y, 30, 30);
         ctx.fillStyle = "white"; // Set text color to white for visibility
 		let textLenght = ctx.measureText(worker).width;
 		x += 40;
-		console.log("the x after the square was drawn = ", x); 	
+		//console.log("the x after the square was drawn = ", x); 	
         ctx.fillText(worker, x, y + 20);
         //x += gapBetweenWorkersInterface;
 		x += textLenght + 70;
@@ -265,7 +260,7 @@ const drawStatistics = (data) => {
 		let hw = hoursWorked[worker];
 		ctx.fillStyle = data[worker].color;
 		ctx.fillText(worker, x, y);
-		x += 10;
+		x += 1;
 		if (parseFloat(hw) % 1 !== 0){//is not int //'12.5'
 			hw = parseInt(hw);
 			ctx.fillText('-> ' + hw.toString() + ":30 h", x + ctx.measureText(worker).width, y);	
@@ -276,7 +271,7 @@ const drawStatistics = (data) => {
 	}
 };
 const clearCanvas = (ctx, canvas, bc) => {
-	console.log("this is the bc = ", bc);
+	//console.log("this is the bc = ", bc);
 	ctx.fillStyle = bc;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
@@ -303,7 +298,7 @@ const schedule = (x, y, data) => {
 		j += 0.5;
 	};
 	let hour = j;//transformTime2(j);
-	console.log("THIS IS THE DESIGNED HOUR: ", hour);
+	//console.log("THIS IS THE DESIGNED HOUR: ", hour);
 	if (!data[selectedWorker]["horarios"][x].includes(hour)){
 		data[selectedWorker]["horarios"][x].push(hour);
 	};
@@ -317,7 +312,7 @@ const checkIfInterfaceClicked = (x, y, gap, data) => {
             const boxWidth = 30; // Width of the color box
             const padding = 40; // Padding between the box and the name
             const totalWidth = padding + textWidth + 70; // Total clickable width for this worker
-			console.log("this is the totalwidth of the worker ", worker, " = ", totalWidth, "and the currentZ = ", currentX);
+			//console.log("this is the totalwidth of the worker ", worker, " = ", totalWidth, "and the currentZ = ", currentX);
 			
             if (x >= currentX && x <= currentX + totalWidth) {
                 return worker; // Return the worker if the click is within their area
