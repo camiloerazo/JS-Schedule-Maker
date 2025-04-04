@@ -15,7 +15,7 @@ const initialGridx = 50;
 const initialGridy = 150;
 const initialInterfacey = 20;
 const divisionHeight = 30;
-const hourLine = 70;
+const hourLine = 70; //width of the time labels e.g 9:00, 9:30 etc
 const shiftLenght  = 30;
 const initialInfoX = initialGridx + 30;
 const initialInfoY = initialGridy + (divisionHeight * ((end - begin + 1) * 2)) + 25;
@@ -24,6 +24,7 @@ const backgroundColor = "black";
 const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Domingo"];
 let selectedWorker;
 const posMatrix = [];
+let gapBetweenWorkersInterface = 400;
 const data = {
 	"Angela M":{
 		"horarios":[
@@ -204,15 +205,18 @@ const drawInterface = (data, dayLineLength) => {
             color = `rgb(${r} ${g} ${b})`;
             data[worker].color = color;
         }
-
         // Draw the worker's color and name
+		console.log("initial x when drawing the interface for worker = ", worker, " is =", x);
         ctx.fillStyle = color;
         ctx.fillRect(x, y, 30, 30);
         ctx.fillStyle = "white"; // Set text color to white for visibility
-        ctx.fillText(worker, x + 40, y + 20);
-        x += dayLineLength;
+		let textLenght = ctx.measureText(worker).width;
+		x += 40;
+		console.log("the x after the square was drawn = ", x); 	
+        ctx.fillText(worker, x, y + 20);
+        //x += gapBetweenWorkersInterface;
+		x += textLenght + 70;
     }
-
     ctx.closePath();
 };
 const drawInGrid = (x, y, worker, dayLineLength, data, totalWorkers) => {
@@ -244,11 +248,12 @@ const drawStatistics = (data) => {
 		let hw = hoursWorked[worker];
 		ctx.fillStyle = data[worker].color;
 		ctx.fillText(worker, x, y);
+		x += 10;
 		if (parseFloat(hw) % 1 !== 0){//is not int //'12.5'
 			hw = parseInt(hw);
-			ctx.fillText(hw.toString() + ":30 h", x + 100, y);	
+			ctx.fillText('-> ' + hw.toString() + ":30 h", x + ctx.measureText(worker).width, y);	
 		}else{
-			ctx.fillText(hw + "h", x + 100, y);
+			ctx.fillText('-> ' + hw + "h", x + ctx.measureText(worker).width , y);
 		}
 		x += 250;
 	}
@@ -287,21 +292,25 @@ const schedule = (x, y, data) => {
 	};
 };
 //Checks if the interface is being clicked
-const checkIfInterfaceClicked = (x, y, dayLineLength, data) => {
-	if (x > initialGridx + hourLine && y < 110){
-		//console.log("interface being clicked");
-		//This function returns the name of the worker who is being clicked
-		let dx = Math.floor((x - initialGridx - hourLine) / dayLineLength);
-		let i = 0;
-		for (let worker in data){
-			if(i == dx) return worker;
-			else i++;
-		};
-		return null;
-	}
-	else{
-		return false;
-	};
+const checkIfInterfaceClicked = (x, y, gap, data) => {
+	if (x > initialGridx + hourLine && y < 110) { // Check if the click is within the interface area
+        let currentX = initialGridx + hourLine; // Start at the initial x position
+        for (let worker in data) {
+            const textWidth = ctx.measureText(worker).width; // Get the width of the worker's name
+            const boxWidth = 30; // Width of the color box
+            const padding = 40; // Padding between the box and the name
+            const totalWidth = padding + textWidth + 70; // Total clickable width for this worker
+			console.log("this is the totalwidth of the worker ", worker, " = ", totalWidth, "and the currentZ = ", currentX);
+			
+            if (x >= currentX && x <= currentX + totalWidth) {
+                return worker; // Return the worker if the click is within their area
+            }
+            currentX += totalWidth; // Move to the next worker's area (add extra padding between workers)
+        }
+        return null; // Return null if no worker matches
+    } else {
+        return false; // Return false if the click is outside the interface area
+    }
 };
 //Function to remove workHours
 const removeHourFromData = (x, y, dayLineLength, data) => {
@@ -367,7 +376,7 @@ async function main(){
 			isPressed = true;
 			const pos = getMousePos(event);
 			//console.log("this is the pos of the click ", pos);
-			let name = checkIfInterfaceClicked(pos.x, pos.y, dayLineLength, data);
+			let name = checkIfInterfaceClicked(pos.x, pos.y, gapBetweenWorkersInterface, data);
 			if (name){
 				selectedWorker = name;
 				drawStatistics(data);
