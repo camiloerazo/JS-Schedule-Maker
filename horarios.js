@@ -23,6 +23,8 @@ let isPressed = false;
 const backgroundColor = "black";
 const days = ["Lunes", "Martes", "Miercoles", "Jueves", "Viernes", "Sábado","Domingo"];
 let selectedWorker;
+let minimumWage = 1423000;
+let montlyHours = 230; //how much hours must be worked in the month
 const posMatrix = [];
 let gapBetweenWorkersInterface = 400;
 const data = {
@@ -64,7 +66,72 @@ const data = {
 		],
 		"color": null,
 		"posInDay": 3
-	}		
+	}/*
+	"dummy1":{
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
+		"color": null,
+		"posInDay": 4
+	},	
+	"dummy2":{
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
+		"color": null,
+		"posInDay": 5
+	},	
+	"dummy3":{
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
+		"color": null,
+		"posInDay": 6
+	},
+	"dummy4":{
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
+		"color": null,
+		"posInDay": 7
+	},
+	"dummy5":{
+		"horarios": [
+			[],
+			[],
+			[],
+			[],
+			[],
+			[],
+			[]
+		],
+		"color": null,
+		"posInDay": 8
+	}*/				
 };
 
 const binId = '67d1a3748561e97a50ea96c6';
@@ -255,11 +322,15 @@ const drawInGrid = (x, y, worker, dayLineLength, data, totalWorkers) => {
 const drawStatistics = (data) => {
 	let x = initialGridx;
 	let y = initialInfoY;
+	let y2 = y + 40;
 	const hoursWorked = getTotalHoursWorked(data);
+	let hourValue = minimumWage/montlyHours;
 	for (worker in data){
 		let hw = hoursWorked[worker];
 		ctx.fillStyle = data[worker].color;
 		ctx.fillText(worker, x, y);
+		ctx.fillText("Salario semanal =", x, y2);
+		ctx.fillText(((hourValue * hw) | 0).toString(),x,y2+30); //Calculate weeklywage but we need some additional parameters like night hours
 		x += 1;
 		if (parseFloat(hw) % 1 !== 0){//is not int //'12.5'
 			hw = parseInt(hw);
@@ -407,8 +478,12 @@ async function main(){
 			const mpos = getMatrixPos(pos.x, pos.y, dayLineLength);
 			//console.log("this is the pos ", pos);
 			//console.log("this is the matrix pos", mpos);
-			drawInGrid(mpos.x, mpos.y, selectedWorker, dayLineLength, data, totalWorkers);
-			schedule(mpos.x, mpos.y, data);
+			const hoursPerDay = (end - begin) / 0.5 + 1;
+			if (mpos.x < days.length && mpos.y < hoursPerDay){
+				//console.log("im on mouse move and you are drawing in a valid popsition");
+				drawInGrid(mpos.x, mpos.y, selectedWorker, dayLineLength, data, totalWorkers);
+				schedule(mpos.x, mpos.y, data);
+			}
 			clearCanvas(ctx, canvas, backgroundColor);
 			drawGrid(totalWorkers, dayLineLength, hourLine);
 			drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
