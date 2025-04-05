@@ -1,6 +1,6 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
-ctx.fillStyle = "white"; // Set fill color to white
+ctx.fillStyle = "black"; // Set fill color to white
 const ratio = window.devicePixelRatio || 1;
 //canvas.style.width = "1250px";
 //canvas.style.height = "1000px";
@@ -193,10 +193,10 @@ const drawHelpSquare = (x, y, color) => {
 	ctx.fillStyle = "black";
 };
 const drawGrid = (totalWorkers, dayLineLength, hourLine) => { 
-	ctx.fillStyle = "black"; // Set fill color to white
+	ctx.fillStyle = "white"; // Set fill color to white
 	ctx.fillRect(0, 0, canvas.width, canvas.height); // Fill entire canvas
-	ctx.fillStyle = "white";
-	ctx.strokeStyle = "white";
+	ctx.fillStyle = "black";
+	ctx.strokeStyle = "black";
 	//Draws the grid
 	let posx = initialGridx; 
 	let posy = initialGridy;
@@ -288,7 +288,7 @@ const drawInterface = (data, dayLineLength) => {
 		//console.log("initial x when drawing the interface for worker = ", worker, " is =", x);
         ctx.fillStyle = color;
         ctx.fillRect(x, y, 30, 30);
-        ctx.fillStyle = "white"; // Set text color to white for visibility
+        ctx.fillStyle = "black"; // Set text color to white for visibility
 		let textLenght = ctx.measureText(worker).width;
 		x += 40;
 		//console.log("the x after the square was drawn = ", x); 	
@@ -341,10 +341,34 @@ const drawStatistics = (data) => {
 		x += 250;
 	}
 };
+const drawExportButton = () => {
+    const buttonX = initialGridx; // X position of the button
+    const buttonY = initialInfoY + 150; // Y position of the button (below statistics)
+    const buttonWidth = 300; // Width of the button
+    const buttonHeight = 50; // Height of the button
+
+    // Draw the button
+    ctx.fillStyle = "blue"; // Button background color
+    ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+    // Draw the button text
+    ctx.fillStyle = "white"; // Text color
+    //ctx.font = "20px Arial";
+    const buttonText = "Descargar imagen";
+    const textWidth = ctx.measureText(buttonText).width;
+    const textX = buttonX + (buttonWidth - textWidth) / 2; // Center the text horizontally
+    const textY = buttonY + (buttonHeight + 20) / 2; // Center the text vertically
+    ctx.fillText(buttonText, textX, textY);
+
+    // Save button position for click detection
+    return { x: buttonX, y: buttonY, width: buttonWidth, height: buttonHeight };
+};
+
 const clearCanvas = (ctx, canvas, bc) => {
 	//console.log("this is the bc = ", bc);
 	ctx.fillStyle = bc;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
+	//drawExportButton();
 }
 //Funct to export as image
 const exportImg = () => {
@@ -352,6 +376,30 @@ const exportImg = () => {
 	link.download = "canvas_image.png";
 	link.href = canvas.toDataURL("image/png");
 	link.click();
+};
+const exportImg2 = (dayLineLength) => {
+    // Define the area to export (interface + grid)
+    const exportX = initialGridx - 50; // Start from the grid's x position
+    const exportY = initialInterfacey; // Start from the interface's y position
+    const exportWidth = (dayLineLength * days.length) + initialGridx + hourLine + 150; // Width of the grid plus 100 pixels
+    const exportHeight = initialGridy + (divisionHeight * ((end - begin + 1) * 2)) + 50; // Height of the grid and interface
+
+    // Create a temporary canvas
+    const tempCanvas = document.createElement("canvas");
+    const tempCtx = tempCanvas.getContext("2d");
+
+    // Set the size of the temporary canvas
+    tempCanvas.width = exportWidth;
+    tempCanvas.height = exportHeight;
+
+    // Draw the desired portion of the original canvas onto the temporary canvas
+    tempCtx.drawImage(canvas, exportX, exportY, exportWidth, exportHeight, 0, 0, exportWidth, exportHeight);
+
+    // Export the temporary canvas as a PNG
+    const link = document.createElement("a");
+    link.download = "interface_and_grid.png";
+    link.href = tempCanvas.toDataURL("image/png");
+    link.click();
 };
 //Function to get the position in the matrix
 const getMatrixPos = (x, y, dayLineLength) => {
@@ -453,6 +501,21 @@ async function main(){
 	const totalWorkers = Object.keys(data).length;
 	const dayLineLength = totalWorkers * shiftLenght;
 	let hoursPerDay;
+	const exportButton = drawExportButton();
+
+	canvas.addEventListener("click", (event) => {
+		const pos = getMousePos(event);
+	
+		// Check if the click is within the button's bounds
+		if (
+			pos.x >= exportButton.x &&
+			pos.x <= exportButton.x + exportButton.width &&
+			pos.y >= exportButton.y &&
+			pos.y <= exportButton.y + exportButton.height
+		) {
+			exportImg2(dayLineLength); // Call the export function
+		}
+	});
 
 	canvas.addEventListener("mousedown", (event) => {
 		if (event.button == 0){
@@ -469,6 +532,7 @@ async function main(){
 			drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
 			drawStatistics(data);
 			drawInterface(data,dayLineLength);
+			drawExportButton();
 		}
 	});
 
@@ -489,6 +553,7 @@ async function main(){
 			drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
 			drawStatistics(data);
 			drawInterface(data,dayLineLength);
+			drawExportButton();
 		};
 		//console.log("im moving ",getMousePos(event));
 	});
@@ -508,10 +573,12 @@ async function main(){
 		drawColors(data, shiftLenght, initialGridx, initialGridy, dayLineLength, hourLine, divisionHeight, begin);
 		drawStatistics(data);
 		drawInterface(data,dayLineLength);
+		drawExportButton();
 	});
 
 	drawGrid(totalWorkers, dayLineLength, hourLine);
 	drawInterface(data, dayLineLength);
+	drawExportButton();
 	//addReferenceLines(ctx, initialGridx, initialGridy, divisionHeight, begin, hourLine);
 }
 main();
